@@ -1,16 +1,20 @@
 import pytest
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 
 
 @pytest.fixture
-def browser(request):
+def chrome_options():
+    options = webdriver.ChromeOptions()
+    options.add_argument("--incognito")
+    return options
+
+
+@pytest.fixture
+def driver(chrome_options):
     print("\nStarting browser for tests...")
 
-    options = Options()
-
-    browser = webdriver.Chrome(options=options)
-    yield browser
+    driver = webdriver.Chrome(options=chrome_options)
+    yield driver
 
     print("\nQuiting browser...")
-    browser.quit()
+    driver.quit()
