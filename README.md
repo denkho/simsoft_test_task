@@ -30,4 +30,4 @@ pytest -s ./tests
 ```
 allure serve reports
 ```
-Просмотреть отчет можно в директории /allure_report/ файл report_screen.png
+Просмотреть скрины из отчета Allure можно в директории [/allure_report/](/allure_report/)
