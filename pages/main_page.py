@@ -1,4 +1,4 @@
-from pages.base import BasePage
+from pages.base_page import BasePage
 from selenium.webdriver.chrome.webdriver import WebDriver
 
 

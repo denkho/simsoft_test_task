@@ -1,51 +1,63 @@
-from data.urls import Urls
 from pages.locators import MainPage
 from data.data import Data
-from pages import main_page
+import allure
 
 
-def test_form_should_be_valid(driver):
-    """Test checks the positive scenario of the form submition"""
+@allure.feature("Form submission")
+@allure.story("Positive case: all fields filled correctly")
+@allure.severity(allure.severity_level.CRITICAL)
+@allure.title("Проверка успешной отправки формы при корректных данных")
+def test_form_should_be_valid(open_main_page):
+    page = open_main_page
 
-    page = main_page.MainPage(driver, Urls.BASE_URL)
+    with allure.step("Заполняем поля формы корректными значениями"):
+        page.fill_in_input_field(MainPage.NAME_FIELD, Data.NAME)
+        page.fill_in_input_field(MainPage.PASSWORD_FIELD, Data.PASSWORD)
 
-    page.open()
+        page.click(MainPage.FAV_DRINK_MILK)
+        page.click(MainPage.FAV_DRINK_COFFEE)
 
-    page.fill_in_input_field(MainPage.NAME_FIELD, Data.NAME)
-    page.fill_in_input_field(MainPage.PASSWORD_FIELD, Data.PASSWORD)
+        page.click(MainPage.FAV_COLOR)
 
-    page.click(MainPage.FAV_DRINK_MILK)
-    page.click(MainPage.FAV_DRINK_COFFEE)
+        page.select(MainPage.QU_AUTOMATION, MainPage.QU_AUTOMATION_VALUE)
 
-    page.click(MainPage.FAV_COLOR)
+        page.fill_in_input_field(MainPage.EMAIL_FIELD, Data.EMAIL)
 
-    page.select(MainPage.QU_AUTOMATION, MainPage.QU_AUTOMATION_VALUE)
+    with allure.step(
+        "Формируем текст сообщения из количества и длины элементов списка"
+    ):
+        text = (
+            page.get_number_of_elements(MainPage.AUTOMATION_TOOLS)
+            + " "
+            + page.get_longest_element(MainPage.AUTOMATION_TOOLS)
+        )
+        page.fill_in_input_field(MainPage.MESSAGE_FIELD, text)
 
-    page.fill_in_input_field(MainPage.EMAIL_FIELD, Data.EMAIL)
+    with allure.step("Отправляем форму"):
+        page.scroll_to_and_click(MainPage.SUBMIT_BUTTON)
 
-    text = (
-        page.get_number_of_elements(MainPage.AUTOMATION_TOOLS)
-        + " "
-        + page.get_longest_element(MainPage.AUTOMATION_TOOLS)
-    )
-    page.fill_in_input_field(MainPage.MESSAGE_FIELD, text)
+    with allure.step("Проверяем сообщение об успешной отправке"):
+        allert_text = page.get_alert_text()
 
-    page.scroll_to_and_click(MainPage.SUBMIT_BUTTON)
-
-    assert (
-        page.get_alert_text() == Data.ALERT_MESSAGE
-    ), f"Alert message is {page.get_alert_text()} and should be {Data.ALERT_MESSAGE}"
+        assert (
+            allert_text == Data.ALERT_MESSAGE
+        ), f"Alert message is {allert_text} and should be {Data.ALERT_MESSAGE}"
 
 
-def test_form_should_not_proceed_with_empy_required_field(driver):
-    """Test checks if the Required field Name is empty 
-    it should not proceed to success alert
-    """
+@allure.feature("Form submission")
+@allure.story("Negative scenario: empty required field")
+@allure.severity(allure.severity_level.NORMAL)
+@allure.title(
+    "Проверка невозможности отправки формы без заполнения обязательного поля Name"
+)
+def test_form_should_not_proceed_with_empy_required_field(open_main_page):
+    page = open_main_page
+    with allure.step("Не заполняем обязательное поле Name"):
+        pass
+    with allure.step("Пробуем отправить форму"):
+        page.scroll_to_and_click(MainPage.SUBMIT_BUTTON)
 
-    page = main_page.MainPage(driver, Urls.BASE_URL)
-
-    page.open()
-
-    page.scroll_to_and_click(MainPage.SUBMIT_BUTTON)
-
-    assert not page.is_alert_present(), "Alert is present or something other went wrong"
+    with allure.step("Проверяем, что алерт не появился"):
+        assert (
+            not page.is_alert_present()
+        ), "Alert is present though form is not correct"
