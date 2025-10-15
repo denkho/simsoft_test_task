@@ -4,7 +4,8 @@ from data.data import Data
 from pages import main_page
 
 
-def test_fill_form(driver):
+def test_form_should_be_valid(driver):
+    """Test checks the positive scenario of the form submition"""
 
     page = main_page.MainPage(driver, Urls.BASE_URL)
 
@@ -31,4 +32,20 @@ def test_fill_form(driver):
 
     page.scroll_to_and_click(MainPage.SUBMIT_BUTTON)
 
-    assert page.get_alert_text() == Data.ALERT_MESSAGE
+    assert (
+        page.get_alert_text() == Data.ALERT_MESSAGE
+    ), f"Alert message is {page.get_alert_text()} and should be {Data.ALERT_MESSAGE}"
+
+
+def test_form_should_not_proceed_with_empy_required_field(driver):
+    """Test checks if the Required field Name is empty 
+    it should not proceed to success alert
+    """
+
+    page = main_page.MainPage(driver, Urls.BASE_URL)
+
+    page.open()
+
+    page.scroll_to_and_click(MainPage.SUBMIT_BUTTON)
+
+    assert not page.is_alert_present(), "Alert is present or something other went wrong"

@@ -3,6 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait as wait
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import NoAlertPresentException
 
 
 class BasePage:
@@ -55,3 +56,10 @@ class BasePage:
     def get_alert_text(self, timeout=10):
         wait(self.driver, timeout).until(EC.alert_is_present())
         return Alert(self.driver).text
+
+    def is_alert_present(self):
+        try:
+            self.driver.switch_to.alert 
+            return True
+        except NoAlertPresentException:
+            return False
